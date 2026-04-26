@@ -145,8 +145,8 @@ async function renderDashboard() {
     .sort((a,b)=> new Date(get(b,'reg_date','등록일','created_at','date')||0) - new Date(get(a,'reg_date','등록일','created_at','date')||0))
     .slice(0, noticeLimit);
 
-  // 활성 사진 (최근 3장)
-  const activePhotos = (S.photos||[]).filter(p=>isActive(get(p,'is_active','활성','active'))).slice(0,3);
+  // 활성 사진 (최근 4장 — 썸네일 미리보기용)
+  const activePhotos = (S.photos||[]).filter(p=>isActive(get(p,'is_active','활성','active'))).slice(0,4);
 
   // 활성 찬조
   const activeSponsors = (S.sponsors||[]).filter(s=>isActive(get(s,'is_active','활성','active')));
@@ -158,9 +158,8 @@ async function renderDashboard() {
   <div class="dash-greeting">
     <div class="dash-greeting-inner">
       <div class="dash-greeting-icon">👋</div>
-      <div>
-        <h2>${greeting}</h2>
-        <p>${cfg().ORG_NAME||'J_LAB'} · ${cfg().ORG_YEAR||'2025'}</p>
+      <div class="dash-greeting-text-wrap">
+        <h2 class="dash-greeting-msg">${greeting}</h2>
       </div>
     </div>
   </div>
@@ -174,70 +173,75 @@ async function renderDashboard() {
     </div>
   </div>` : ''}
 
-  <!-- 섹션: 최근 공지 -->
-  <div class="dash-sec">
-    <div class="dash-sec-hdr">
-      <span class="dash-sec-lbl">📢 최근 공지사항</span>
-      <button class="dash-more" data-page="notices">전체보기 →</button>
-    </div>
-    <div class="notice-list">
-      ${recentNotices.length ? recentNotices.map(n=>{
-        const title   = get(n,'title','제목','공지제목');
-        const regDate = fmt(get(n,'reg_date','등록일','created_at','date'));
-        const isImp   = String(get(n,'is_important','중요여부','important')||'').toLowerCase()==='y';
-        const id      = get(n,'notice_id','id','공지ID');
-        return `<div class="notice-item" data-nid="${id}" style="cursor:pointer">
-          <div class="notice-block">
-            ${isImp?'<span class="notice-badge badge-imp">중요</span>':''}
-            <span class="notice-title">${title}</span>
-            <span class="notice-date">${regDate}</span>
-          </div>
-        </div>`;
-      }).join('') : '<div class="empty-row">등록된 공지사항이 없습니다.</div>'}
-    </div>
-  </div>
+  <!-- PC 2열 중단: 공지 + 행사 -->
+  <div class="dash-mid-grid">
 
-  <!-- 섹션: 다가오는 행사 -->
-  <div class="dash-sec">
-    <div class="dash-sec-hdr">
-      <span class="dash-sec-lbl">📅 다가오는 행사</span>
-      <button class="dash-more" data-page="events">전체보기 →</button>
+    <!-- 최근 공지사항 -->
+    <div class="dash-sec">
+      <div class="dash-sec-hdr">
+        <span class="dash-sec-lbl">📢 최근 공지사항</span>
+        <button class="dash-more" data-page="notices">전체보기 →</button>
+      </div>
+      <div class="notice-list">
+        ${recentNotices.length ? recentNotices.map(n=>{
+          const title   = get(n,'title','제목','공지제목');
+          const regDate = fmt(get(n,'reg_date','등록일','created_at','date'));
+          const isImp   = String(get(n,'is_important','중요여부','important')||'').toLowerCase()==='y';
+          const id      = get(n,'notice_id','id','공지ID');
+          return `<div class="notice-item" data-nid="${id}" style="cursor:pointer">
+            <div class="notice-block">
+              ${isImp?'<span class="notice-badge badge-imp">중요</span>':''}
+              <span class="notice-title">${title}</span>
+              <span class="notice-date">${regDate}</span>
+            </div>
+          </div>`;
+        }).join('') : '<div class="empty-row">등록된 공지사항이 없습니다.</div>'}
+      </div>
     </div>
-    ${upcomingEvt.length ? `<div class="event-cards">
-      ${upcomingEvt.map(e=>{
-        const name  = get(e,'event_name','name','행사명','이벤트명');
-        const date  = fmt(get(e,'event_date','date','행사일','행사일자','이벤트일'));
-        const place = get(e,'place','venue','장소','location');
-        const fee   = get(e,'fee','참가비','amount','participation_fee');
-        const note  = get(e,'note','비고','memo','remarks');
-        return `<div class="event-card pub-event-card">
-          <div class="pub-event-name">${name}</div>
-          <div class="pub-event-meta">
-            ${date  ?`<span>📅 ${date}</span>`:''}
-            ${place ?`<span>📍 ${place}</span>`:''}
-            ${fee   ?`<span>💰 ${fee}</span>`:''}
-            ${note  ?`<span>📝 ${note}</span>`:''}
-          </div>
-        </div>`;
-      }).join('')}
-    </div>` : '<div class="empty-row">예정된 행사가 없습니다.</div>'}
-  </div>
 
-  <!-- 섹션: 사진갤러리 -->
+    <!-- 다가오는 행사 -->
+    <div class="dash-sec">
+      <div class="dash-sec-hdr">
+        <span class="dash-sec-lbl">📅 다가오는 행사</span>
+        <button class="dash-more" data-page="events">전체보기 →</button>
+      </div>
+      ${upcomingEvt.length ? `<div class="event-cards">
+        ${upcomingEvt.map(e=>{
+          const name  = get(e,'event_name','name','행사명','이벤트명');
+          const date  = fmt(get(e,'event_date','date','행사일','행사일자','이벤트일'));
+          const place = get(e,'place','venue','장소','location');
+          const fee   = get(e,'fee','참가비','amount','participation_fee');
+          const note  = get(e,'note','비고','memo','remarks');
+          return `<div class="event-card pub-event-card">
+            <div class="pub-event-name">${name}</div>
+            <div class="pub-event-meta">
+              ${date  ?`<span>📅 ${date}</span>`:''}
+              ${place ?`<span>📍 ${place}</span>`:''}
+              ${fee   ?`<span>💰 ${fee}</span>`:''}
+              ${note  ?`<span>📝 ${note}</span>`:''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : '<div class="empty-row">예정된 행사가 없습니다.</div>'}
+    </div>
+
+  </div><!-- /.dash-mid-grid -->
+
+  <!-- 사진갤러리 미리보기 -->
   <div class="dash-sec">
     <div class="dash-sec-hdr">
       <span class="dash-sec-lbl">📷 사진갤러리</span>
       <button class="dash-more" data-page="gallery">전체보기 →</button>
     </div>
     ${activePhotos.length ? `
-    <div class="dash-photo-row">
+    <div class="dash-photo-grid">
       ${activePhotos.map((p,i)=>{
         const thumb = driveThumb(get(p,'photo_url','사진URL','image_url','url'),'w400');
         const cap   = get(p,'caption','설명','title','photo_title');
-        return `<div class="dash-photo-item" data-gidx="${i}">
+        return `<div class="dash-photo-card" data-gidx="${i}">
           <img src="${thumb}" alt="${cap}" loading="lazy"
-            onerror="this.parentElement.classList.add('img-err');this.style.display='none'"/>
-          <div class="img-err-msg"><span>사진을 불러올 수 없습니다.<br><small>공유 권한을 확인해 주세요.</small></span></div>
+            onerror="this.closest('.dash-photo-card').classList.add('img-err');this.style.display='none'"/>
+          <div class="img-err-msg"><span>사진을 불러올 수 없습니다.<br><small>공유 권한 확인</small></span></div>
         </div>`;
       }).join('')}
     </div>` : `<div class="dash-gallery-cta"><button class="btn btn-outline btn-sm" data-page="gallery">📷 갤러리 보러가기</button></div>`}
@@ -257,6 +261,10 @@ async function renderDashboard() {
       const n = S.notices.find(x=>String(get(x,'notice_id','id','공지ID'))===el2.dataset.nid);
       if(n) openNoticeModal(n);
     });
+  });
+  // 대시보드 사진 클릭 → 사진갤러리 이동
+  el.querySelectorAll('.dash-photo-card[data-gidx]').forEach(card=>{
+    card.addEventListener('click',()=>navigateTo('gallery'));
   });
   el.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>navigateTo(b.dataset.page)));
 

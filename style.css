@@ -174,7 +174,7 @@ body{
 .pg-count{font-size:.75rem;font-weight:700;color:var(--white);background:var(--n600);padding:2px 10px;border-radius:10px}
 
 /* ══ 대시보드 ══ */
-.dash-page{display:flex;flex-direction:column;gap:0}
+.dash-page{display:flex;flex-direction:column;gap:0;max-width:1180px;margin:0 auto;width:100%}
 .dash-sec{margin-bottom:22px}
 .dash-sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .dash-sec-lbl{font-size:.88rem;font-weight:700;color:var(--n800)}
@@ -185,11 +185,19 @@ body{
 }
 .dash-more:hover{color:var(--b400);text-decoration:underline}
 
+/* ── PC 2열 중단 (공지 + 행사) ── */
+.dash-mid-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+  margin-bottom:22px;
+}
+
 /* 인사말 카드 */
 .dash-greeting{
   background:linear-gradient(135deg,var(--n900) 0%,var(--n700) 100%);
   border-radius:var(--r-lg);border:1px solid rgba(201,160,64,.25);
-  padding:20px;margin-bottom:18px;box-shadow:var(--sh2);
+  padding:24px 28px;margin-bottom:18px;box-shadow:var(--sh2);
   position:relative;overflow:hidden;
 }
 .dash-greeting::before{
@@ -197,10 +205,13 @@ body{
   background:linear-gradient(90deg,var(--g400),var(--g200),var(--g400));
   border-radius:var(--r-lg) var(--r-lg) 0 0;
 }
-.dash-greeting-inner{display:flex;align-items:center;gap:14px}
-.dash-greeting-icon{font-size:2rem;flex-shrink:0}
-.dash-greeting h2{font-size:.98rem;font-weight:700;color:var(--white);line-height:1.5}
-.dash-greeting p{font-size:.76rem;color:var(--g400);margin-top:3px}
+.dash-greeting-inner{display:flex;align-items:center;gap:16px}
+.dash-greeting-icon{font-size:2.2rem;flex-shrink:0}
+.dash-greeting-text-wrap{flex:1}
+.dash-greeting-msg{
+  font-size:1.1rem;font-weight:700;color:var(--white);line-height:1.5;
+  margin:0;
+}
 
 /* 찬조 전광판 */
 .ticker-wrap{
@@ -253,13 +264,28 @@ body{
 .pub-event-meta span{font-size:.82rem;color:var(--gr500)}
 .badge-past{font-size:.66rem;background:var(--gr400);color:var(--white);padding:2px 7px;border-radius:4px}
 
-/* 대시보드 사진 미리보기 */
+/* 대시보드 사진 미리보기 그리드 */
+.dash-photo-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+.dash-photo-card{
+  height:160px;border-radius:var(--r-md);overflow:hidden;
+  background:var(--gr100);cursor:pointer;position:relative;
+  border:1px solid var(--gr200);box-shadow:var(--sh1);
+}
+.dash-photo-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.dash-photo-card:hover img{transform:scale(1.04)}
+.dash-photo-card.img-err{display:flex;align-items:center;justify-content:center}
+.dash-gallery-cta{text-align:center;padding:8px 0}
+
+/* 대시보드 사진 구버전 클래스 삭제 방지용 alias */
 .dash-photo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .dash-photo-item{aspect-ratio:1;border-radius:var(--r-md);overflow:hidden;background:var(--gr100);cursor:pointer;position:relative}
 .dash-photo-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
 .dash-photo-item:hover img{transform:scale(1.04)}
-.dash-photo-item.img-err{background:var(--gr100);display:flex;align-items:center;justify-content:center}
-.dash-gallery-cta{text-align:center;padding:8px 0}
+.dash-photo-item.img-err{display:flex;align-items:center;justify-content:center}
 
 /* 섹션 라벨 */
 .sec-label{font-size:.78rem;font-weight:700;color:var(--gr500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--g400);display:inline-block}
@@ -381,8 +407,19 @@ body{
   .menu-toggle{display:none}
   #sidebarOverlay{display:none !important}
   #bottomNav{display:none}
-  #content{padding:24px 28px}
-  .dash-photo-row{grid-template-columns:repeat(3,1fr)}
+  #content{padding:28px 32px}
+  /* 인사말 글자 크기 PC용 */
+  .dash-greeting-msg{font-size:1.5rem !important}
+  .dash-greeting{padding:28px 32px}
+  /* PC 2열 레이아웃: 공지 + 행사 */
+  .dash-mid-grid{
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:22px;
+  }
+  /* 사진 그리드: PC 4열 */
+  .dash-photo-grid{grid-template-columns:repeat(4,1fr);gap:12px}
+  .dash-photo-card{height:170px}
   .event-photo-grid,.gal-grid{grid-template-columns:repeat(3,1fr)}
 }
 
@@ -391,10 +428,21 @@ body{
   #content{max-width:1100px}
 }
 
+/* 태블릿 600~899px: 사진 3열 */
+@media(min-width:600px) and (max-width:899px){
+  .dash-photo-grid{grid-template-columns:repeat(3,1fr);gap:10px}
+  .dash-photo-card{height:160px}
+}
+
 /* ══ 모바일 ══ */
 @media(max-width:600px){
+  /* 인사말 글자 크기 모바일 */
+  .dash-greeting-msg{font-size:1.05rem !important}
+  .dash-greeting{padding:18px 20px}
+  /* 사진: 모바일 2열 */
+  .dash-photo-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .dash-photo-card{height:140px}
   .event-photo-grid,.gal-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .dash-photo-row{grid-template-columns:repeat(3,1fr);gap:6px}
   #photoModalImg{max-height:58vh}
   #photoModalPrev{left:4px}
   #photoModalNext{right:4px}
@@ -403,7 +451,8 @@ body{
   #photoModalTitle{font-size:.9rem}
 }
 @media(max-width:390px){
-  .dash-photo-row{grid-template-columns:repeat(2,1fr)}
+  .dash-photo-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .dash-photo-card{height:120px}
   .event-photo-grid,.gal-grid{grid-template-columns:repeat(2,1fr);gap:8px}
 }
 
