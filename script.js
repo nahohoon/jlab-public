@@ -576,13 +576,92 @@ function bindAll() {
   if(c.VERSION){ const e=$('versionBadge');if(e)e.textContent='v'+c.VERSION; }
 }
 
-/* ─── PWA 등록 ─── */
+/* ─── PWA 서비스워커 등록 ─── */
 function registerSW() {
-  if('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
-      .then(()=>console.log('[J_LAB Public] SW 등록'))
-      .catch(e=>console.warn('[J_LAB Public] SW 실패',e));
+      .then(reg => {
+        console.log('[J_LAB Public] SW 등록 완료', reg.scope);
+      })
+      .catch(e => console.warn('[J_LAB Public] SW 등록 실패', e));
   }
+}
+
+/* ─── PWA 설치 버튼 제어 ─── */
+let _deferredPrompt = null;   // beforeinstallprompt 이벤트 보관
+const PWA_DISMISS_KEY = 'jlab_pwa_banner_dismissed';
+
+function _showInstallButtons() {
+  ['pwaInstallBtn','pwaInstallHeader','pwaInstallSidebar'].forEach(id => {
+    const el = $(id); if (el) el.style.display = '';
+  });
+  const banner = $('pwaInstallBanner');
+  if (banner && !sessionStorage.getItem(PWA_DISMISS_KEY)) {
+    banner.style.display = '';
+    banner.classList.add('pwa-banner-show');
+  }
+}
+function _hideInstallButtons() {
+  ['pwaInstallBtn','pwaInstallHeader','pwaInstallSidebar'].forEach(id => {
+    const el = $(id); if (el) el.style.display = 'none';
+  });
+  const banner = $('pwaInstallBanner');
+  if (banner) { banner.style.display = 'none'; banner.classList.remove('pwa-banner-show'); }
+}
+
+function initPWA() {
+  /* ① Android/Chrome — beforeinstallprompt 이벤트 수신 */
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _deferredPrompt = e;
+    _showInstallButtons();
+  });
+
+  /* ② 설치 완료 시 버튼 숨김 */
+  window.addEventListener('appinstalled', () => {
+    _deferredPrompt = null;
+    _hideInstallButtons();
+    showToast('📲 J_LAB 앱이 홈 화면에 추가되었습니다!');
+  });
+
+  /* ③ 설치 버튼 클릭 핸들러 공통 */
+  async function doInstall() {
+    if (!_deferredPrompt) return;
+    _deferredPrompt.prompt();
+    const { outcome } = await _deferredPrompt.userChoice;
+    if (outcome === 'accepted') { _deferredPrompt = null; _hideInstallButtons(); }
+  }
+
+  /* ④ 각 버튼 이벤트 바인딩 */
+  ['pwaInstallBtn','pwaInstallHeader','pwaInstallSidebar'].forEach(id => {
+    const el = $(id); if (el) el.addEventListener('click', doInstall);
+  });
+
+  /* ⑤ 배너 닫기 버튼 */
+  const bannerClose = $('pwaInstallClose');
+  if (bannerClose) bannerClose.addEventListener('click', () => {
+    sessionStorage.setItem(PWA_DISMISS_KEY, '1');
+    _hideInstallButtons();
+  });
+
+  /* ⑥ iOS Safari — beforeinstallprompt 미지원 시 수동 안내 배너 */
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandalone = window.navigator.standalone === true ||
+                          window.matchMedia('(display-mode: standalone)').matches;
+  const manualBanner = $('pwaManualBanner');
+
+  if (isIOS && !isInStandalone && manualBanner) {
+    if (!sessionStorage.getItem(PWA_DISMISS_KEY + '_ios')) {
+      manualBanner.style.display = '';
+      manualBanner.classList.add('pwa-banner-show');
+    }
+  }
+
+  const manualClose = $('pwaManualClose');
+  if (manualClose) manualClose.addEventListener('click', () => {
+    sessionStorage.setItem(PWA_DISMISS_KEY + '_ios', '1');
+    if (manualBanner) { manualBanner.style.display = 'none'; manualBanner.classList.remove('pwa-banner-show'); }
+  });
 }
 
 /* ─── 초기화 ─── */
@@ -594,5 +673,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   bindAll();
   registerSW();
+  initPWA();
   navigateTo('dashboard');
 });

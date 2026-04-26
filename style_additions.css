@@ -78,3 +78,95 @@ html,body{overflow-x:hidden !important;max-width:100vw}
 /* ── 스켈레톤 ── */
 .skeleton{background:linear-gradient(90deg,var(--gr100) 25%,var(--gr50) 50%,var(--gr100) 75%);background-size:200% 100%;animation:skel 1.4s infinite;border-radius:var(--r-md)}
 @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ══════════════════════════════════════════════
+   PWA 설치 배너 & 버튼 스타일
+══════════════════════════════════════════════ */
+
+/* ── 상단 설치 배너 (Android/Chrome) ── */
+#pwaInstallBanner{
+  position:fixed;top:0;left:0;right:0;z-index:2000;
+  background:linear-gradient(135deg,#0d1f3c 0%,#1a2f50 100%);
+  border-bottom:2px solid var(--g300);
+  padding:0;
+  transform:translateY(-110%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#pwaInstallBanner.pwa-banner-show{transform:translateY(0)}
+
+#pwaInstallInner{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 16px;max-width:720px;margin:0 auto;
+}
+#pwaInstallIcon img{width:36px;height:36px;border-radius:8px;flex-shrink:0}
+#pwaInstallText{flex:1;min-width:0}
+#pwaInstallText strong{display:block;font-size:.88rem;font-weight:700;color:#fff}
+#pwaInstallText span{font-size:.75rem;color:rgba(255,255,255,.65)}
+
+/* ── 설치 실행 버튼 ── */
+.pwa-install-btn{
+  flex-shrink:0;
+  background:var(--g300);color:var(--navy-900);
+  border:none;border-radius:20px;
+  padding:7px 16px;font-size:.8rem;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+  transition:background .2s,transform .15s;
+}
+.pwa-install-btn:hover{background:var(--g400);transform:scale(1.04)}
+.pwa-install-btn:active{transform:scale(.97)}
+
+/* ── 배너 닫기 버튼 ── */
+.pwa-banner-close{
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.5);font-size:1rem;
+  padding:4px 6px;border-radius:4px;flex-shrink:0;
+  transition:color .2s;
+}
+.pwa-banner-close:hover{color:#fff}
+
+/* ── iOS Safari 수동 안내 배너 ── */
+#pwaManualBanner{
+  position:fixed;bottom:72px;left:12px;right:12px;z-index:2000;
+  background:linear-gradient(135deg,#0d1f3c,#1a2f50);
+  border:1px solid var(--g300);border-radius:14px;
+  padding:14px 16px;
+  transform:translateY(120%);opacity:0;
+  transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);
+}
+#pwaManualBanner.pwa-banner-show{transform:translateY(0);opacity:1}
+
+#pwaManualInner{display:flex;align-items:flex-start;gap:12px}
+#pwaManualIcon{font-size:1.6rem;flex-shrink:0;margin-top:2px}
+#pwaManualInner p{flex:1;font-size:.82rem;color:rgba(255,255,255,.85);line-height:1.55;margin:0}
+#pwaManualInner p strong{color:var(--g300)}
+#pwaManualInner .pwa-banner-close{align-self:flex-start;margin-top:-2px}
+
+/* ── 헤더 내 설치 아이콘 버튼 ── */
+.pwa-hdr-btn svg{stroke:var(--g300)}
+.pwa-hdr-btn:hover svg{stroke:#fff}
+
+/* ── 사이드바 하단 설치 버튼 ── */
+.pwa-sidebar-btn{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:9px 12px;margin-bottom:10px;
+  background:rgba(201,160,64,.12);
+  border:1px solid rgba(201,160,64,.3);
+  border-radius:8px;cursor:pointer;
+  color:var(--g300);font-size:.8rem;font-weight:600;
+  transition:background .2s,border-color .2s;
+}
+.pwa-sidebar-btn:hover{background:rgba(201,160,64,.22);border-color:var(--g300)}
+.pwa-sidebar-btn svg{flex-shrink:0}
+
+/* ── PWA standalone 모드: 배너 상단 여백 보정 ── */
+@media(display-mode:standalone){
+  #pwaInstallBanner,#pwaManualBanner{display:none !important}
+  #mainWrap{padding-top:env(safe-area-inset-top,0)}
+}
+
+/* ── 모바일: 배너가 열릴 때 mainWrap 밀어내기 ── */
+@media(max-width:899px){
+  body.pwa-banner-open #mainWrap{padding-top:calc(64px + env(safe-area-inset-top,0))}
+}

@@ -4,21 +4,47 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <meta name="theme-color" content="#0a1628"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="J_LAB"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="application-name" content="J_LAB"/>
   <meta name="description" content="J_LAB 회원 안내"/>
-  <title>J_LAB</title>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+  <title>J_LAB 회원안내</title>
+  <link rel="manifest" href="./manifest.json"/>
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="style_additions.css"/>
+  <link rel="stylesheet" href="./style.css"/>
+  <link rel="stylesheet" href="./style_additions.css"/>
 </head>
 <body>
 <div id="app">
+
+  <!-- ══ PWA 설치 배너 ══ -->
+  <div id="pwaInstallBanner" style="display:none;">
+    <div id="pwaInstallInner">
+      <div id="pwaInstallIcon">
+        <img src="./icon-192.png" alt="J_LAB" width="36" height="36" onerror="this.style.display='none'"/>
+      </div>
+      <div id="pwaInstallText">
+        <strong>J_LAB 앱으로 설치</strong>
+        <span>홈 화면에 추가하면 앱처럼 실행됩니다</span>
+      </div>
+      <button id="pwaInstallBtn" class="pwa-install-btn">앱으로 설치하기</button>
+      <button id="pwaInstallClose" class="pwa-banner-close" aria-label="닫기">✕</button>
+    </div>
+  </div>
+
+  <!-- ══ PWA 수동 안내 토스트 (iOS Safari 등) ══ -->
+  <div id="pwaManualBanner" style="display:none;">
+    <div id="pwaManualInner">
+      <span id="pwaManualIcon">📲</span>
+      <p>휴대폰 브라우저 메뉴에서 <strong>'홈 화면에 추가'</strong>를 눌러<br>J_LAB을 앱처럼 사용할 수 있습니다.</p>
+      <button id="pwaManualClose" class="pwa-banner-close">닫기</button>
+    </div>
+  </div>
 
   <!-- ══ SIDEBAR ══ -->
   <nav id="sidebar">
@@ -57,11 +83,16 @@
       </li>
     </ul>
     <div class="sidebar-footer">
+      <!-- 사이드바 내 설치 버튼 (PC / 태블릿용) -->
+      <button id="pwaInstallSidebar" class="pwa-sidebar-btn" style="display:none;" title="홈 화면에 추가">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2v13M7 10l5 5 5-5"/><path d="M3 18h18v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2z"/></svg>
+        앱으로 설치하기
+      </button>
       <div class="sync-status">
         <span class="sync-dot" id="syncDot"></span>
         <span class="sync-text" id="syncText">연결 중...</span>
       </div>
-      <span class="version-badge" id="versionBadge">v1.0.0</span>
+      <span class="version-badge" id="versionBadge">v2.3.0</span>
     </div>
   </nav>
 
@@ -85,6 +116,10 @@
             <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
+        </button>
+        <!-- 헤더 설치 버튼 (모바일 우측) -->
+        <button id="pwaInstallHeader" class="hdr-btn pwa-hdr-btn" style="display:none;" title="앱으로 설치하기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2v13M7 10l5 5 5-5"/><path d="M3 18h18v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2z"/></svg>
         </button>
         <div class="org-pill" id="headerOrgPill">J_LAB</div>
       </div>
@@ -161,7 +196,7 @@
 <!-- Toast -->
 <div id="toast" role="alert" aria-live="polite"></div>
 
-<script src="config.js"></script>
-<script src="script.js" onerror="document.getElementById('content').innerHTML='<div class=\'pg-loading\'><div style=\'font-size:2rem;margin-bottom:12px\'>⚠️</div><p>script.js 로드 실패<br><small>GitHub Pages 배포 후 1~2분 대기 후 새로고침</small></p></div>';"></script>
+<script src="./config.js"></script>
+<script src="./script.js" onerror="document.getElementById('content').innerHTML='<div class=\'pg-loading\'><div style=\'font-size:2rem;margin-bottom:12px\'>⚠️</div><p>script.js 로드 실패<br><small>GitHub Pages 배포 후 1~2분 대기 후 새로고침</small></p></div>';"></script>
 </body>
 </html>
