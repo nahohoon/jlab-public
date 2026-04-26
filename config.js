@@ -18,7 +18,7 @@ window.JLAB_CONFIG = {
   /* ════════════════════════════════════
      ★ 필수 설정 (이것만 바꾸세요)
   ════════════════════════════════════ */
-  API_URL: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbxAekzspUqmZsE1TLGhIVVQSEdHYtvFzdHIPgtCfNq14lXGi7MmlHtCuL5-JMnHrWE/exec',
 
   /* ════════════════════════════════════
      조직 정보
