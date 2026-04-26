@@ -57,10 +57,28 @@ const API = {
 };
 
 /* ─── 유틸 ─── */
+
+/**
+ * 한국어 날짜 문자열을 포함한 다양한 형식의 날짜를 Date 객체로 변환
+ * 지원 형식: "2026년 5월 14일", "2026-05-14", "2026/05/14", Date 객체 등
+ */
+function parseEventDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) return isNaN(value) ? null : value;
+  const str = String(value).trim();
+  // 한국어 날짜: "2026년 5월 14일"
+  const m = str.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  // 일반 날짜 문자열
+  const d = new Date(str);
+  return isNaN(d) ? null : d;
+}
+
+/** 날짜를 YYYY.MM.DD 형식으로 포맷 (한국어 날짜 포함) */
 function fmt(v) {
   if (!v) return '';
-  const d = new Date(v);
-  if (isNaN(d)) return String(v);
+  const d = parseEventDate(v);
+  if (!d) return String(v);
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
 }
 function isActive(v) {
@@ -115,11 +133,11 @@ async function renderDashboard() {
   const greeting = cfg().GREETING || '안녕하세요, J_LAB 회원여러분. 화이팅^^';
   const noticeLimit = cfg().NOTICE_LIMIT || 5;
 
-  // 다가오는 행사
+  // 다가오는 행사 — parseEventDate()로 한국어 날짜 형식 포함 처리
   const today = new Date(); today.setHours(0,0,0,0);
   const upcomingEvt = (S.events||[])
-    .map(e=>({...e, _d: new Date(get(e,'event_date','행사일','date','이벤트일'))}))
-    .filter(e=>!isNaN(e._d) && e._d >= today)
+    .map(e=>({...e, _d: parseEventDate(get(e,'event_date','date','행사일','행사일자','이벤트일'))}))
+    .filter(e=> e._d !== null && e._d >= today)
     .sort((a,b)=>a._d-b._d).slice(0,5);
 
   // 최근 공지
@@ -187,9 +205,9 @@ async function renderDashboard() {
     </div>
     ${upcomingEvt.length ? `<div class="event-cards">
       ${upcomingEvt.map(e=>{
-        const name  = get(e,'event_name','행사명','name','이벤트명');
-        const date  = fmt(get(e,'event_date','행사일','date','이벤트일'));
-        const place = get(e,'place','장소','location','venue');
+        const name  = get(e,'event_name','name','행사명','이벤트명');
+        const date  = fmt(get(e,'event_date','date','행사일','행사일자','이벤트일'));
+        const place = get(e,'place','venue','장소','location');
         const fee   = get(e,'fee','참가비','amount','participation_fee');
         const note  = get(e,'note','비고','memo','remarks');
         return `<div class="event-card pub-event-card">
@@ -335,14 +353,15 @@ async function renderEvents() {
     el.innerHTML = `<div class="empty-row error-row">행사 정보 로드 실패: ${e.message}</div>`; return;
   }
   const today = new Date(); today.setHours(0,0,0,0);
-  const allEvt = (S.events||[]).map(e=>({...e, _d: new Date(get(e,'event_date','행사일','date','이벤트일'))}));
-  const upcoming = allEvt.filter(e=>!isNaN(e._d)&&e._d>=today).sort((a,b)=>a._d-b._d);
-  const past     = allEvt.filter(e=>!isNaN(e._d)&&e._d<today).sort((a,b)=>b._d-a._d).slice(0,10);
+  // parseEventDate()로 한국어 날짜 형식 포함 처리
+  const allEvt = (S.events||[]).map(e=>({...e, _d: parseEventDate(get(e,'event_date','date','행사일','행사일자','이벤트일'))}));
+  const upcoming = allEvt.filter(e=> e._d !== null && e._d >= today).sort((a,b)=>a._d-b._d);
+  const past     = allEvt.filter(e=> e._d !== null && e._d <  today).sort((a,b)=>b._d-a._d).slice(0,10);
 
   const cardHTML = (e, isPast=false) => {
-    const name  = get(e,'event_name','행사명','name','이벤트명');
-    const date  = fmt(get(e,'event_date','행사일','date','이벤트일'));
-    const place = get(e,'place','장소','location','venue');
+    const name  = get(e,'event_name','name','행사명','이벤트명');
+    const date  = fmt(get(e,'event_date','date','행사일','행사일자','이벤트일'));
+    const place = get(e,'place','venue','장소','location');
     const fee   = get(e,'fee','참가비','amount','participation_fee');
     const note  = get(e,'note','비고','memo','remarks');
     return `<div class="event-card pub-event-card${isPast?' event-past':''}">
