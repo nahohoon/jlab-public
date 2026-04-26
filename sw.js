@@ -1,84 +1,21 @@
-/* J_LAB Public Service Worker v1.0.0
-   목적: PWA 설치 지원 + 캐시 꼬임 최소화
-   원칙: HTML/JS/CSS는 network-first, 아이콘/manifest는 cache-first
-*/
+/* J_LAB Public Service Worker v2.0.0 */
+const CACHE = "jlab-public-v2-0-0";
+const CORE  = ["./","./manifest.json","./icon-192.png","./icon-512.png","./apple-touch-icon.png"];
 
-const CACHE_NAME = "jlab-public-pwa-v1-0-0";
+self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE).catch(()=>null)));});
 
-const CORE_ASSETS = [
-  "./",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./apple-touch-icon.png"
-];
-
-self.addEventListener("install", (event) => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(CORE_ASSETS).catch(() => null))
-  );
+self.addEventListener("activate",e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE?caches.delete(k):null))).then(()=>self.clients.claim()));
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then((keys) =>
-        Promise.all(
-          keys.map((key) => {
-            if (key !== CACHE_NAME) {
-              return caches.delete(key);
-            }
-            return null;
-          })
-        )
-      )
-      .then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
-
-  const url = new URL(req.url);
-
-  // GitHub Pages 외부 요청은 그대로 통과
-  if (!url.hostname.includes("nahohoon.github.io")) {
+self.addEventListener("fetch",e=>{
+  const req=e.request;
+  if(req.method!=="GET") return;
+  const url=new URL(req.url);
+  if(!url.hostname.includes("nahohoon.github.io")) return;
+  if(req.mode==="navigate"||/\.(html|js|css)$/.test(url.pathname)){
+    e.respondWith(fetch(req).then(res=>{caches.open(CACHE).then(c=>c.put(req,res.clone()));return res;}).catch(()=>caches.match(req).then(c=>c||caches.match("./"))));
     return;
   }
-
-  // HTML / JS / CSS는 최신 파일 우선 (network-first)
-  if (
-    req.mode === "navigate" ||
-    url.pathname.endsWith(".html") ||
-    url.pathname.endsWith(".js") ||
-    url.pathname.endsWith(".css")
-  ) {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          return res;
-        })
-        .catch(() =>
-          caches.match(req).then((cached) => cached || caches.match("./"))
-        )
-    );
-    return;
-  }
-
-  // 아이콘, manifest 등은 캐시 우선 (cache-first)
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-        return res;
-      });
-    })
-  );
+  e.respondWith(caches.match(req).then(c=>{if(c)return c;return fetch(req).then(res=>{caches.open(CACHE).then(ch=>ch.put(req,res.clone()));return res;});}));
 });

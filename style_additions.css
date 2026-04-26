@@ -1,173 +1,122 @@
 /* ══════════════════════════════════════════════
-   J_LAB Public Lite — style_additions.css
-   일반회원 배포용 추가 스타일
+   J_LAB Public Lite — style_additions.css v2.0.0
+   관리자용 디자인 기반 추가 스타일
 ══════════════════════════════════════════════ */
 
-/* ── 찬조 전광판 미세 조정 ── */
-.sponsor-ticker-wrap {
-  box-shadow: inset 0 0 0 1px rgba(201,160,64,.3);
-  min-height: 44px;
-  display: flex; align-items: center;
+/* 가로 스크롤 방지 */
+html,body{overflow-x:hidden !important;max-width:100vw}
+#app,#mainWrap,#content{overflow-x:hidden !important;max-width:100%}
+
+/* ── 찬조 전광판 세밀 조정 ── */
+#sponsorTickerWrap:empty{display:none !important}
+
+/* ── 대시보드 인사말 글로우 효과 ── */
+.dash-greeting::after{
+  content:'';position:absolute;
+  bottom:-40px;right:-20px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(201,160,64,.15) 0%,transparent 70%);
+  border-radius:50%;
+  pointer-events:none;
 }
 
-/* 메시지가 많을 때 속도 동적 조절 */
-.ticker-track[data-count="1"] { animation-duration: 10s; }
-.ticker-track[data-count="2"] { animation-duration: 20s; }
-.ticker-track[data-count="3"] { animation-duration: 28s; }
+/* ── 공지 아이템 중요 표시 강화 ── */
+.notice-item:has(.badge-imp){border-left:3px solid var(--red)}
 
-/* ── 대시보드 인사말 강조 ── */
-.dash-greeting-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--g400), var(--g300));
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-.dash-greeting-card { position: relative; overflow: hidden; }
-
-/* ── 사진 hover 오버레이 ── */
-.gallery-item::after {
-  content: '🔍';
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  opacity: 0;
-  transition: all .2s;
-}
-.gallery-item:hover::after {
-  background: rgba(0,0,0,.25);
-  opacity: 1;
+/* ── 행사 카드 다가오는 행사 배지 ── */
+.pub-event-card:not(.event-past){
+  box-shadow:0 2px 8px rgba(201,160,64,.12);
 }
 
-/* ── 대시보드 사진 hover ── */
-.dash-photo-item { position: relative; cursor: pointer; }
-.dash-photo-item:hover img { transform: scale(1.04); transition: transform .3s; }
-
-/* ── 공지카드 중요 표시 강화 ── */
-.notice-card:has(.badge-important) {
-  border-left: 3px solid var(--red);
-}
-.dash-notice-item:has(.badge-important) {
-  border-left: 3px solid var(--red);
+/* ── 갤러리 날짜 헤더 스티키 ── */
+.gal-date-label{
+  background:var(--gr50);
+  padding-top:4px;
+  padding-bottom:4px;
 }
 
-/* ── 행사 카드 상태 표시 ── */
-.event-card:not(.event-past) {
-  border-left: 3px solid var(--g400);
+/* ── 사진 카드 애니메이션 ── */
+.event-photo-card,.notice-item,.event-card{
+  animation:fadeUp .28s ease both;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.event-photo-card:nth-child(2){animation-delay:.04s}
+.event-photo-card:nth-child(3){animation-delay:.08s}
+.event-photo-card:nth-child(4){animation-delay:.12s}
+.event-photo-card:nth-child(5){animation-delay:.16s}
+.event-photo-card:nth-child(6){animation-delay:.20s}
+
+/* ── 공지사항 전체 목록 hover ── */
+.notice-item-full:hover{
+  border-left:3px solid var(--b400) !important;
+  border-radius:var(--r-md) !important;
 }
 
-/* ── 스크롤 쉐도우 (갤러리 그룹) ── */
-.gallery-group-header {
-  position: sticky; top: 0;
-  background: var(--bg);
-  z-index: 10;
-  padding-top: 4px;
+/* ── 대시보드 섹션 카드 테두리 ── */
+.dash-sec .notice-list{
+  border-radius:var(--r-lg);
+  box-shadow:var(--sh1);
 }
 
-/* ── 모바일 사진 모달 개선 ── */
-@media (max-width: 767px) {
-  #photoModal { padding: 56px 4px 100px; }
-  #photoModalImg { border-radius: 6px; max-height: 60dvh; }
-  .pm-nav { width: 36px; height: 36px; font-size: 1.4rem; }
-  #photoModalPrev { left: 4px; }
-  #photoModalNext { right: 4px; }
+/* ── 이미지 오류 모바일 ── */
+@media(max-width:600px){
+  .img-error-msg{font-size:.72rem;padding:12px 8px}
 }
 
-/* ── PWA 설치 안내 배너 (선택적 표시) ── */
-.pwa-install-banner {
-  display: none;
-  position: fixed;
-  bottom: calc(var(--bottom-nav-h) + 12px);
-  left: 12px; right: 12px;
-  background: var(--n900);
-  border: 1px solid var(--g400);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  display: flex; align-items: center; gap: 12px;
-  z-index: 300;
-  box-shadow: var(--shadow-lg);
-}
-.pwa-install-banner.show { display: flex; }
-.pwa-install-text {
-  flex: 1; font-size: .82rem; color: var(--white);
-}
-.pwa-install-btn {
-  background: var(--g400); color: var(--n900);
-  border: none; border-radius: 6px;
-  padding: 6px 14px; font-size: .8rem; font-weight: 700;
-  cursor: pointer; font-family: inherit;
-  flex-shrink: 0;
-}
-.pwa-install-close {
-  background: transparent; border: none;
-  color: var(--n200); cursor: pointer; font-size: 1.1rem;
-  flex-shrink: 0; padding: 0 4px;
+/* ── PWA 아이콘 영역 (스플래시 대응) ── */
+@media(display-mode:standalone){
+  #header{padding-top:env(safe-area-inset-top)}
+  body{padding-top:0}
 }
 
-/* ── 미세 애니메이션 ── */
-.notice-card, .event-card, .dash-event-item {
-  animation: fadeInUp .3s ease both;
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ── 공지 모달 긴 제목 대응 ── */
+.nm-title{word-break:break-word;overflow-wrap:anywhere}
+
+/* ── 모바일 행사 메타 ── */
+@media(min-width:480px){
+  .pub-event-meta{flex-direction:row}
 }
 
-/* ── 로딩 스켈레톤 ── */
-.skeleton {
-  background: linear-gradient(90deg, #e8edf2 25%, #f4f7fb 50%, #e8edf2 75%);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.4s infinite;
-  border-radius: 8px;
+/* ── 스켈레톤 (선택적) ── */
+.skeleton{
+  background:linear-gradient(90deg,var(--gr100) 25%,var(--gr50) 50%,var(--gr100) 75%);
+  background-size:200% 100%;
+  animation:skel 1.4s infinite;
+  border-radius:var(--r-md);
 }
-@keyframes skeleton-loading {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ── 버전 표시 업데이트 ── */
-.version-badge { user-select: none; }
-
-/* ── 텍스트 선택 방지 (버튼류) ── */
-.nav-item, .bnav-item, .hdr-btn, .btn, .dash-more-btn {
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+/* ── Toast 위치 조정 (데스크탑) ── */
+@media(min-width:900px){
+  #toast{bottom:24px}
 }
 
-/* ── iOS Safari Safe Area ── */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  #bottomNav {
-    padding-bottom: env(safe-area-inset-bottom);
-    height: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
-  }
-  #mainWrap {
-    padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
-  }
-  @media (min-width: 768px) {
-    #mainWrap { padding-bottom: 0; }
-  }
+/* ── 행사 카드 그림자 강화 ── */
+.pub-event-card:hover{
+  box-shadow:0 6px 20px rgba(201,160,64,.18) !important;
+  border-left-color:var(--g300) !important;
 }
 
-/* ── 이미지 오류 처리 ── */
-img[src=""] {
-  visibility: hidden;
+/* ── 갤러리 미리보기 (대시보드 3장) hover ── */
+.dash-photo-item:hover{
+  box-shadow:0 4px 14px rgba(10,22,40,.15);
 }
 
-/* ── 행사 메타 개선 ── */
-@media (min-width: 480px) {
-  .event-card-meta { flex-direction: row; flex-wrap: wrap; }
+/* ── 버전 배지 안정화 ── */
+.version-badge{user-select:none;cursor:default}
+
+/* ── 404/오류 화면 ── */
+.error-row{
+  border:1px solid rgba(239,68,68,.2) !important;
+  background:rgba(239,68,68,.04) !important;
+  color:var(--red) !important;
 }
 
-/* ── 공지 모달 — 긴 제목 처리 ── */
-.notice-modal-title {
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-/* ── 갤러리 — 2열 모드 (좁은 화면) ── */
-@media (max-width: 359px) {
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-  .dash-photo-grid { grid-template-columns: repeat(2, 1fr); }
+/* ── 날짜 그룹 구분선 ── */
+.gal-date-group + .gal-date-group{
+  border-top:1px solid var(--gr100);
+  padding-top:24px;
 }

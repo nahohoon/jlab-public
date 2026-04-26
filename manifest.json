@@ -2,13 +2,13 @@
   "name": "J_LAB",
   "short_name": "J_LAB",
   "description": "J_LAB 회원 안내 앱",
+  "lang": "ko-KR",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a1628",
   "theme_color": "#0a1628",
-  "lang": "ko-KR",
+  "background_color": "#0a1628",
   "icons": [
     {
       "src": "icon-192.png",
