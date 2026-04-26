@@ -170,3 +170,132 @@ html,body{overflow-x:hidden !important;max-width:100vw}
 @media(max-width:899px){
   body.pwa-banner-open #mainWrap{padding-top:calc(64px + env(safe-area-inset-top,0))}
 }
+
+/* ══════════════════════════════════════════════
+   v2.4 모바일 가독성 최종 오버라이드
+══════════════════════════════════════════════ */
+
+/* ── 섹션 헤더 이모지·텍스트 간격 정렬 ── */
+.dash-sec-lbl{display:flex;align-items:center;gap:6px}
+
+/* ── 전체보기 버튼: 클릭 영역 확보 ── */
+.dash-more{
+  min-height:36px;display:inline-flex;align-items:center;
+  padding:4px 8px;border-radius:6px;
+  transition:background .15s,color .15s;
+}
+.dash-more:hover{background:rgba(59,130,246,.08)}
+
+/* ── 공지 아이템 패딩 ── */
+.notice-item{padding:14px 16px}
+
+/* ── 대시보드 섹션 간격 (모바일) ── */
+@media(max-width:600px){
+  .dash-sec{margin-bottom:30px}
+  .dash-mid-grid{gap:16px;margin-bottom:30px}
+  /* 인사말 → 찬조전광판 간격 */
+  .dash-greeting{margin-bottom:14px}
+  /* 찬조전광판 → 공지/행사 섹션 간격 */
+  .ticker-wrap{margin-bottom:20px}
+  /* 공지 본문 */
+  .notice-item{padding:13px 14px}
+  .notice-block{gap:5px}
+  /* 행사 카드 내부 여백 */
+  .event-card{padding:18px 14px}
+  /* 행사 메타 정보 */
+  .pub-event-meta{gap:7px}
+  /* 갤러리 미리보기 */
+  .dash-photo-grid{gap:12px}
+  /* 갤러리 페이지 카드 */
+  .event-photo-card{border-radius:14px}
+  .event-photo-img-wrap{aspect-ratio:4/3}
+  /* 갤러리 날짜 그룹 여백 */
+  .gal-date-group{margin-bottom:24px}
+  /* 섹션 타이틀 하단 */
+  .dash-sec-hdr{margin-bottom:10px}
+}
+
+/* ── PC에서 행사 메타 한 줄 정렬 유지 ── */
+@media(min-width:900px){
+  .pub-event-meta{flex-direction:row;flex-wrap:wrap;gap:6px 16px}
+  .pub-event-meta span{font-size:.92rem}
+}
+
+/* ── 태블릿 행사 메타 ── */
+@media(min-width:600px) and (max-width:899px){
+  .pub-event-meta{flex-direction:column;gap:6px}
+}
+
+/* ── 갤러리 페이지 카드 radius 통일 ── */
+.event-photo-card{border-radius:14px}
+
+/* ── 갤러리 썸네일 비율: 4:3 통일 ── */
+.event-photo-img-wrap{aspect-ratio:4/3}
+
+/* ── 사진 카드 아래 불필요 공백 제거 ── */
+.event-photo-card{overflow:hidden;display:flex;flex-direction:column}
+.event-photo-img-wrap{flex-shrink:0}
+
+/* ── 대시보드 사진카드 aspect-ratio 기반 (높이 auto) ── */
+.dash-photo-card{
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+}
+.dash-photo-card img{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* ── 대시보드 사진카드 컨테이너 aspect-ratio ── */
+@media(max-width:599px){
+  .dash-photo-card{aspect-ratio:1/1;height:auto}
+}
+@media(min-width:600px) and (max-width:899px){
+  .dash-photo-card{aspect-ratio:4/3;height:auto}
+}
+@media(min-width:900px){
+  .dash-photo-card{aspect-ratio:4/3;height:auto}
+}
+
+/* ── iOS 홈 인디케이터 bottom 안전 여백 ── */
+@supports(padding-bottom: env(safe-area-inset-bottom)){
+  #bottomNav{padding-bottom:env(safe-area-inset-bottom)}
+  #mainWrap{padding-bottom:calc(var(--bnav-h) + env(safe-area-inset-bottom))}
+}
+
+/* ── bottomNav 아이콘 크기 통일 ── */
+.bnav-item svg{width:22px;height:22px;transition:stroke .18s}
+.bnav-item.active svg{stroke:var(--g400)}
+
+/* ── PC에서 bottomNav 숨김 시 mainWrap padding 초기화 ── */
+@media(min-width:900px){
+  #mainWrap{padding-bottom:0}
+}
+
+/* ══════════════════════════════════════════════
+   v2.5 인사말 3줄 고정 구조
+══════════════════════════════════════════════ */
+.dash-greeting-lines{
+  display:flex;flex-direction:column;gap:4px;word-break:keep-all;
+}
+.greet-line{color:var(--white);line-height:1.3}
+.greet-line-1{font-size:18px;font-weight:600;opacity:.9}
+.greet-line-2{font-size:26px;font-weight:800;line-height:1.25;letter-spacing:-.02em}
+.greet-line-3{font-size:17px;font-weight:600;opacity:.88}
+
+@media(max-width:520px){
+  .greet-line-1{font-size:17px}
+  .greet-line-2{font-size:24px}
+  .greet-line-3{font-size:16px}
+}
+@media(min-width:900px){
+  .greet-line-1{font-size:19px}
+  .greet-line-2{font-size:28px}
+  .greet-line-3{font-size:18px}
+}
+
+/* 기존 dash-greeting-msg 클래스 비활성화 (호환성 유지) */
+.dash-greeting-msg{display:none}

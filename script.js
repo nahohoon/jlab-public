@@ -130,7 +130,9 @@ async function renderDashboard() {
     ]);
   } catch(e) { /* 부분 실패 허용 */ }
 
-  const greeting = cfg().GREETING || '안녕하세요, J_LAB 회원여러분. 화이팅^^';
+  const greetLine1 = cfg().GREETING_L1 || '안녕하세요,';
+  const greetLine2 = cfg().GREETING_L2 || `${cfg().ORG_NAME||'J_LAB'} 회원 여러분`;
+  const greetLine3 = cfg().GREETING_L3 || '오늘도 화이팅입니다^^';
   const noticeLimit = cfg().NOTICE_LIMIT || 5;
 
   // 다가오는 행사 — parseEventDate()로 한국어 날짜 형식 포함 처리
@@ -159,7 +161,11 @@ async function renderDashboard() {
     <div class="dash-greeting-inner">
       <div class="dash-greeting-icon">👋</div>
       <div class="dash-greeting-text-wrap">
-        <h2 class="dash-greeting-msg">${greeting}</h2>
+        <div class="dash-greeting-lines">
+          <div class="greet-line greet-line-1">${greetLine1}</div>
+          <div class="greet-line greet-line-2">${greetLine2}</div>
+          <div class="greet-line greet-line-3">${greetLine3}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -185,13 +191,16 @@ async function renderDashboard() {
       <div class="notice-list">
         ${recentNotices.length ? recentNotices.map(n=>{
           const title   = get(n,'title','제목','공지제목');
+          const body    = get(n,'content','내용','body','text');
           const regDate = fmt(get(n,'reg_date','등록일','created_at','date'));
           const isImp   = String(get(n,'is_important','중요여부','important')||'').toLowerCase()==='y';
           const id      = get(n,'notice_id','id','공지ID');
+          const preview = String(body||'').replace(/<[^>]+>/g,'').trim();
           return `<div class="notice-item" data-nid="${id}" style="cursor:pointer">
             <div class="notice-block">
               ${isImp?'<span class="notice-badge badge-imp">중요</span>':''}
               <span class="notice-title">${title}</span>
+              ${preview?`<span class="notice-preview">${preview}</span>`:''}
               <span class="notice-date">${regDate}</span>
             </div>
           </div>`;
